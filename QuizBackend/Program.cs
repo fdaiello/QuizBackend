@@ -14,6 +14,13 @@ builder.Services.AddSwaggerGen();
 // Database Context
 builder.Services.AddDbContext<QuizContext>(opt => opt.UseInMemoryDatabase("Quiz"));
 
+// Cors Policy
+builder.Services.AddCors(options => options.AddPolicy("Cors", builder => { 
+    builder.AllowAnyHeader();
+    builder.AllowAnyMethod();
+    builder.AllowAnyOrigin();
+}));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,6 +29,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("Cors");
 
 app.UseHttpsRedirection();
 
