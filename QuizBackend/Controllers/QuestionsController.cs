@@ -21,6 +21,8 @@ namespace QuizBackend.Controllers
             _context = context;
         }
 
+        // Some Changes ...
+
         // GET: api/Questions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
