@@ -2,13 +2,14 @@
 {
     public class Question
     {
-        public Question ( string text, string correctAnswer, string answer1, string answer2, string answer3)
+        public Question ( string text, string correctAnswer, string answer1, string answer2, string answer3, int quizId)
         {
             _text = text;
             CorrectAnswer = correctAnswer;
             Answer1 = answer1;
             Answer2 = answer2;
             Answer3 = answer3;
+            QuizId = quizId;
         }
         private string _text = String.Empty;
         
@@ -44,5 +45,6 @@
         public string Answer1 { get; set; }
         public string Answer2 { get; set; }
         public string Answer3 { get; set; }
+        public int QuizId { get; set; }
     }
 }

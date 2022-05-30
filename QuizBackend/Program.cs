@@ -12,7 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Database Context
-builder.Services.AddDbContext<QuizContext>(opt => opt.UseInMemoryDatabase("Quiz"));
+//builder.Services.AddDbContext<QuizContext>(opt => opt.UseInMemoryDatabase("Quiz"));
+builder.Services.AddDbContext<QuizContext>(opt => opt.UseSqlServer("Server = (localdb)\\MSSQLLocalDB; Integrated Security = true;Initial Catalog=Quiz;uid=QUser;pwd=q123"));
 
 // Cors Policy
 builder.Services.AddCors(options => options.AddPolicy("Cors", builder => { 

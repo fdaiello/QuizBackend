@@ -9,5 +9,7 @@ namespace QuizBackend.Data
 
         public DbSet<Question> Questions { get; set; }
 
+        public DbSet<QuizBackend.Models.Quiz>? Quiz { get; set; }
+
     }
 }

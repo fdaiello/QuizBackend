@@ -20,6 +20,17 @@ namespace QuizBackend.Controllers
         {
             _context = context;
         }
+        // GET: api/Questions/1
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Question>>> GetQuestions([FromRoute] int id)
+        {
+            if (_context.Questions == null)
+            {
+                return NotFound();
+            }
+            return await _context.Questions.Where(q=>q.QuizId==id).ToListAsync();
+        }
+
 
         // GET: api/Questions
         [HttpGet]
@@ -32,23 +43,23 @@ namespace QuizBackend.Controllers
             return await _context.Questions.ToListAsync();
         }
 
-        // GET: api/Questions/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Question>> GetQuestion(int id)
-        {
-          if (_context.Questions == null)
-          {
-              return NotFound();
-          }
-            var question = await _context.Questions.FindAsync(id);
+        //// GET: api/Questions/5
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<Question>> GetQuestion(int id)
+        //{
+        //    if (_context.Questions == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var question = await _context.Questions.FindAsync(id);
 
-            if (question == null)
-            {
-                return NotFound();
-            }
+        //    if (question == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return question;
-        }
+        //    return question;
+        //}
 
         // PUT: api/Questions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -93,7 +104,7 @@ namespace QuizBackend.Controllers
             _context.Questions.Add(question);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
+            return CreatedAtAction("GetQuestions", new { id = question.Id }, question);
         }
 
         // DELETE: api/Questions/5
