@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizBackend.Data;
 
@@ -10,9 +11,10 @@ using QuizBackend.Data;
 namespace QuizBackend.Migrations
 {
     [DbContext(typeof(QuizContext))]
-    partial class QuizContextModelSnapshot : ModelSnapshot
+    [Migration("20220530224611_remove-wrong-fk")]
+    partial class removewrongfk
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,8 +56,6 @@ namespace QuizBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizId");
-
                     b.ToTable("Questions");
                 });
 
@@ -74,20 +74,6 @@ namespace QuizBackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Quiz");
-                });
-
-            modelBuilder.Entity("QuizBackend.Models.Question", b =>
-                {
-                    b.HasOne("QuizBackend.Models.Quiz", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("QuizBackend.Models.Quiz", b =>
-                {
-                    b.Navigation("Questions");
                 });
 #pragma warning restore 612, 618
         }

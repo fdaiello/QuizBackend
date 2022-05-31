@@ -97,14 +97,27 @@ namespace QuizBackend.Controllers
         [HttpPost]
         public async Task<ActionResult<Question>> PostQuestion(Question question)
         {
-          if (_context.Questions == null)
-          {
-              return Problem("Entity set 'QuizContext.Questions'  is null.");
-          }
-            _context.Questions.Add(question);
-            await _context.SaveChangesAsync();
+            if (_context.Questions == null)
+            {
+                return Problem("Entity set 'QuizContext.Questions'  is null.");
+            }
 
-            return CreatedAtAction("GetQuestions", new { id = question.Id }, question);
+            var quiz = await _context.Quiz.SingleOrDefaultAsync(p => p.Id == question.QuizId);
+
+            if (quiz == null)
+                return NotFound();
+
+            try
+            {
+                _context.Questions.Add(question);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetQuestions", new { id = question.Id }, question);
+            }
+            catch ( Exception ex )
+            {
+                return BadRequest(ex.InnerException != null ? ex.InnerException.Message : ex.Message);
+            }
+
         }
 
         // DELETE: api/Questions/5

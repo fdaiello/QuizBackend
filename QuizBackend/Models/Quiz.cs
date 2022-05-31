@@ -5,6 +5,8 @@
         public Quiz ( string title )
         {
             _title = title;
+            Questions = new List<Question> ();
+
         }
         private string _title = String.Empty;
         
@@ -35,5 +37,8 @@
                 }
             }
         }
+
+        public virtual ICollection<Question> Questions { get; set; }
+
     }
 }

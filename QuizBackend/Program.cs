@@ -1,6 +1,7 @@
 ﻿
 using QuizBackend.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,10 @@ builder.Services.AddSwaggerGen();
 // Database Context
 //builder.Services.AddDbContext<QuizContext>(opt => opt.UseInMemoryDatabase("Quiz"));
 builder.Services.AddDbContext<QuizContext>(opt => opt.UseSqlServer("Server = (localdb)\\MSSQLLocalDB; Integrated Security = true;Initial Catalog=Quiz;uid=QUser;pwd=q123"));
+builder.Services.AddDbContext<UserDbContext>(opt => opt.UseInMemoryDatabase("User"));
+
+// Identity
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<UserDbContext>();
 
 // Cors Policy
 builder.Services.AddCors(options => options.AddPolicy("Cors", builder => { 
