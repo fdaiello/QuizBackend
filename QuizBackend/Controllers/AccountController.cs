@@ -16,6 +16,14 @@ namespace QuizBackend.Controllers
         public string Password { get; set; }
 
     }
+    public class Token
+    {
+        public Token ( string token)
+        {
+            Value = token;
+        }
+        public string Value { get; set; }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -43,7 +51,9 @@ namespace QuizBackend.Controllers
 
             var jwt = new JwtSecurityToken();
 
-            return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+            //var j = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            return Ok(new Token(jwt.EncodedHeader));
         }
     }
 }
