@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 // Database Context
 //builder.Services.AddDbContext<QuizContext>(opt => opt.UseInMemoryDatabase("Quiz"));
 builder.Services.AddDbContext<QuizContext>(opt => opt.UseSqlServer("Server = (localdb)\\MSSQLLocalDB; Integrated Security = true;Initial Catalog=Quiz;uid=QUser;pwd=q123"));
-builder.Services.AddDbContext<UserDbContext>(opt => opt.UseInMemoryDatabase("User"));
+builder.Services.AddDbContext<UserDbContext>(opt => opt.UseSqlServer("Server = (localdb)\\MSSQLLocalDB; Integrated Security = true;Initial Catalog=User;uid=QUser;pwd=q123"));
 
 // Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<UserDbContext>();
