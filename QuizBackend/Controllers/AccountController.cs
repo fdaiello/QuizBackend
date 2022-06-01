@@ -69,7 +69,7 @@ namespace QuizBackend.Controllers
             var jwt = new JwtSecurityToken(signingCredentials: signinCredentials, claims: claim);
 
             // return Jwt
-            return Ok(new Token(jwt.EncodedHeader));
+            return Ok(new Token(new JwtSecurityTokenHandler().WriteToken(jwt)));
         }
     }
 }
