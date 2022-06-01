@@ -5,17 +5,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-// Configuration
-var envName = Environment.GetEnvironmentVariable("NAME");           // This is not working. Todo: How to setup appsettings.Development ?
-var cfBuilder = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{envName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
-
-var Configuration = cfBuilder.Build();
-
 // App builder
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuration files
+var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -25,11 +23,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Database Context
-//builder.Services.AddDbContext<QuizContext>(opt => opt.UseInMemoryDatabase("Quiz"));
-var quizConnString = Configuration.GetConnectionString("DefaultConnection");
+var quizConnString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<QuizContext>(opt => opt.UseSqlServer(quizConnString));
 
-var userConnString = Configuration.GetConnectionString("UserDbConnection");
+var userConnString = builder.Configuration.GetConnectionString("UserDbConnection");
 builder.Services.AddDbContext<UserDbContext>(opt => opt.UseSqlServer(userConnString));
 
 // Identity
@@ -43,7 +40,7 @@ builder.Services.AddCors(options => options.AddPolicy("Cors", builder => {
 }));
 
 // Authentication with Jwts
-var secret = Configuration.GetValue<string>($"JwtSecret");
+var secret = builder.Configuration.GetValue<string>($"JwtSecret");
 var singingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secret"));
 
 builder.Services.AddAuthentication(opt =>
