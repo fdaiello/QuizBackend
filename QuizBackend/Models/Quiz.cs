@@ -40,5 +40,7 @@
 
         public virtual ICollection<Question> Questions { get; set; }
 
+        public Guid UserId { get; set; }
+
     }
 }

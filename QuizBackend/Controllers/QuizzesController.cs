@@ -97,7 +97,9 @@ namespace QuizBackend.Controllers
 
             // Get userid from Jwt
             var userId = HttpContext.User.Claims.First().Value;
+            quiz.UserId = new Guid(userId);
 
+            // Create quiz
             _context.Quiz.Add(quiz);
             await _context.SaveChangesAsync();
 
