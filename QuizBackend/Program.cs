@@ -5,6 +5,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
+// Configuration
+var envName = Environment.GetEnvironmentVariable("NAME");           // This is not working. Todo: How to setup appsettings.Development ?
+var cfBuilder = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{envName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+var Configuration = cfBuilder.Build();
+
+// App builder
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
@@ -16,8 +26,11 @@ builder.Services.AddSwaggerGen();
 
 // Database Context
 //builder.Services.AddDbContext<QuizContext>(opt => opt.UseInMemoryDatabase("Quiz"));
-builder.Services.AddDbContext<QuizContext>(opt => opt.UseSqlServer("Server = (localdb)\\MSSQLLocalDB; Integrated Security = true;Initial Catalog=Quiz;uid=QUser;pwd=q123"));
-builder.Services.AddDbContext<UserDbContext>(opt => opt.UseSqlServer("Server = (localdb)\\MSSQLLocalDB; Integrated Security = true;Initial Catalog=User;uid=QUser;pwd=q123"));
+var quizConnString = Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<QuizContext>(opt => opt.UseSqlServer(quizConnString));
+
+var userConnString = Configuration.GetConnectionString("UserDbConnection");
+builder.Services.AddDbContext<UserDbContext>(opt => opt.UseSqlServer(userConnString));
 
 // Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<UserDbContext>();
@@ -30,7 +43,8 @@ builder.Services.AddCors(options => options.AddPolicy("Cors", builder => {
 }));
 
 // Authentication with Jwts
-var singingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("quiz-secret"));
+var secret = Configuration.GetValue<string>($"JwtSecret");
+var singingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secret"));
 
 builder.Services.AddAuthentication(opt =>
     {
