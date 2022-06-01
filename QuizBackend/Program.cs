@@ -1,7 +1,9 @@
-﻿
+﻿using System.Text;
 using QuizBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,28 @@ builder.Services.AddCors(options => options.AddPolicy("Cors", builder => {
     builder.AllowAnyMethod();
     builder.AllowAnyOrigin();
 }));
+
+// Authentication with Jwts
+var singingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("quiz-secret"));
+
+builder.Services.AddAuthentication(opt =>
+    {
+        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer( cfg =>
+        {
+            cfg.RequireHttpsMetadata = false;
+            cfg.SaveToken = true;
+            cfg.TokenValidationParameters = new TokenValidationParameters()
+            {
+                IssuerSigningKey = singingKey,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = true
+            };
+        }
+    );
 
 var app = builder.Build();
 
