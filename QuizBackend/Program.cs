@@ -41,7 +41,7 @@ builder.Services.AddCors(options => options.AddPolicy("Cors", builder => {
 
 // Authentication with Jwts
 var secret = builder.Configuration.GetValue<string>($"JwtSecret");
-var singingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secret"));
+var singingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
 builder.Services.AddAuthentication(opt =>
     {
@@ -76,6 +76,8 @@ app.UseCors("Cors");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseAuthentication();
 
 app.MapControllers();
 

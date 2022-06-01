@@ -13,14 +13,15 @@ namespace QuizBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class QuizzesController : ControllerBase
     {
         private readonly QuizContext _context;
+        private readonly IConfiguration _configuration;
 
-        public QuizzesController(QuizContext context)
+        public QuizzesController(QuizContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: api/Quizzes
@@ -86,12 +87,17 @@ namespace QuizBackend.Controllers
         // POST: api/Quizzes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Quiz>> PostQuiz(Quiz quiz)
         {
           if (_context.Quiz == null)
           {
               return Problem("Entity set 'QuizContext.Quiz'  is null.");
           }
+
+            // Get userid from Jwt
+            var userId = HttpContext.User.Claims.First().Value;
+
             _context.Quiz.Add(quiz);
             await _context.SaveChangesAsync();
 

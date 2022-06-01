@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace QuizBackend.Controllers
 {
@@ -29,29 +32,43 @@ namespace QuizBackend.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _configuration = configuration;
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(Credentials credentials)
         {
+            // Create new User at Microft Identity
             var user = new IdentityUser { UserName = credentials.Email, Email=credentials.Email };
-
             var result = await _userManager.CreateAsync(user, credentials.Password);
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
+            // Singin as new user
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            var jwt = new JwtSecurityToken();
+            // User Claims
+            var claim = new Claim[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id)
+            };
 
-            //var j = new JwtSecurityTokenHandler().WriteToken(jwt);
+            // Sign key
+            var secret = _configuration.GetValue<string>($"JwtSecret");
+            var singingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            var signinCredentials = new SigningCredentials(singingKey, SecurityAlgorithms.HmacSha256);
 
+            // Create Jwt
+            var jwt = new JwtSecurityToken(signingCredentials: signinCredentials, claims: claim);
+
+            // return Jwt
             return Ok(new Token(jwt.EncodedHeader));
         }
     }
