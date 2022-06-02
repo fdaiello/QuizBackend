@@ -26,9 +26,23 @@ namespace QuizBackend.Controllers
             _configuration = configuration;
         }
 
+        // GET: api/Quizzes/all
+        [HttpGet("all")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Quiz>>> GetAllQuiz()
+        {
+            if (_context.Quiz == null)
+            {
+                return NotFound();
+            }
+
+            // Return quizzes that belongs authenticated user
+            return await _context.Quiz.ToListAsync();
+        }
+
         // GET: api/Quizzes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Quiz>>> GetQuiz()
+        public async Task<ActionResult<IEnumerable<Quiz>>> GetQuizzes()
         {
           if (_context.Quiz == null)
           {
