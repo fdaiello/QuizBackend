@@ -51,9 +51,31 @@ namespace QuizBackend.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            // Singin as new user
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            // return Token with Jwt for user
+            return Ok(CreateToken(user));
+        }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(Credentials credentials)
+        {
+
+            // Try to sing in with credentials 
+            var signResult = await _signInManager.PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
+
+            // Check if succeded
+            if (!signResult.Succeeded)
+                return BadRequest();
+
+            // Get user
+            var user = await _userManager.FindByEmailAsync(credentials.Email);
+
+            // return Token with Jwt for user
+            return Ok(CreateToken(user));
+        }
+
+        // Create token for given user
+        private Token CreateToken ( IdentityUser user)
+        {
             // User Claims
             var claim = new Claim[]
             {
@@ -69,7 +91,9 @@ namespace QuizBackend.Controllers
             var jwt = new JwtSecurityToken(signingCredentials: signinCredentials, claims: claim);
 
             // return Jwt
-            return Ok(new Token(new JwtSecurityTokenHandler().WriteToken(jwt)));
+            return new Token(new JwtSecurityTokenHandler().WriteToken(jwt));
+
         }
+
     }
 }

@@ -14,6 +14,7 @@ namespace QuizBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class QuizzesController : ControllerBase
     {
         private readonly QuizContext _context;
@@ -33,20 +34,30 @@ namespace QuizBackend.Controllers
           {
               return NotFound();
           }
-            return await _context.Quiz.ToListAsync();
+            // Get userid from Jwt from HttpRequest
+            var userId = HttpContext.User.Claims.First().Value;
+
+            // Return quizzes that belongs authenticated user
+            return await _context.Quiz.Where(p=>p.UserId==new Guid(userId)).ToListAsync();
         }
 
         // GET: api/Quizzes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Quiz>> GetQuiz(int id)
         {
-          if (_context.Quiz == null)
-          {
-              return NotFound();
-          }
+            if (_context.Quiz == null)
+            {
+                return NotFound();
+            }
+
+            // Get userid from Jwt from HttpRequest
+            var userId = HttpContext.User.Claims.First().Value;
+
+            // Find quiz
             var quiz = await _context.Quiz.FindAsync(id);
 
-            if (quiz == null)
+            // And check if it belongs user
+            if (quiz == null || quiz.UserId != new Guid(userId))
             {
                 return NotFound();
             }
@@ -63,6 +74,19 @@ namespace QuizBackend.Controllers
             {
                 return BadRequest();
             }
+
+            if (_context.Quiz == null)
+            {
+                return NotFound();
+            }
+
+            // Get userid from Jwt from HttpRequest
+            var userId = HttpContext.User.Claims.First().Value;
+
+            // Check if quiz belongs authenticated user
+            var quiz1 = await _context.Quiz.FindAsync(id);
+            if ( quiz1 == null || quiz1.UserId != new Guid(userId))
+                return NotFound();
 
             _context.Entry(quiz).State = EntityState.Modified;
 
@@ -88,7 +112,6 @@ namespace QuizBackend.Controllers
         // POST: api/Quizzes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize]
         public async Task<ActionResult<Quiz>> PostQuiz(Quiz quiz)
         {
           if (_context.Quiz == null)
@@ -96,8 +119,10 @@ namespace QuizBackend.Controllers
               return Problem("Entity set 'QuizContext.Quiz'  is null.");
           }
 
-            // Get userid from Jwt
+            // Get userid from Jwt from HttpRequest
             var userId = HttpContext.User.Claims.First().Value;
+
+            // Bind UserId to quiz
             quiz.UserId = new Guid(userId);
 
             // Create quiz
@@ -115,8 +140,12 @@ namespace QuizBackend.Controllers
             {
                 return NotFound();
             }
+
+            // Get userid from Jwt from HttpRequest
+            var userId = HttpContext.User.Claims.First().Value;
+
             var quiz = await _context.Quiz.FindAsync(id);
-            if (quiz == null)
+            if (quiz == null || quiz.UserId != new Guid(userId))
             {
                 return NotFound();
             }
