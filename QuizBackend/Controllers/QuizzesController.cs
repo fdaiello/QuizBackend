@@ -35,9 +35,16 @@ namespace QuizBackend.Controllers
             {
                 return NotFound();
             }
+            try
+            {
+                // Return quizzes that belongs authenticated user
+                return await _context.Quiz.ToListAsync();
 
-            // Return quizzes that belongs authenticated user
-            return await _context.Quiz.ToListAsync();
+            }
+            catch ( Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/Quizzes
