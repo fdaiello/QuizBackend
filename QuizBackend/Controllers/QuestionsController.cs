@@ -102,6 +102,11 @@ namespace QuizBackend.Controllers
                 return Problem("Entity set 'QuizContext.Questions'  is null.");
             }
 
+            if (_context.Quiz == null)
+            {
+                return Problem("Entity set 'QuizContext.Questions'  is null.");
+            }
+
             var quiz = await _context.Quiz.SingleOrDefaultAsync(p => p.Id == question.QuizId);
 
             if (quiz == null)
