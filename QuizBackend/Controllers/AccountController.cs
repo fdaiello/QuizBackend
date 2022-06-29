@@ -58,19 +58,25 @@ namespace QuizBackend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(Credentials credentials)
         {
+            try
+            {
+                // Try to sing in with credentials 
+                var signResult = await _signInManager.PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
 
-            // Try to sing in with credentials 
-            var signResult = await _signInManager.PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
+                // Check if succeded
+                if (!signResult.Succeeded)
+                    return BadRequest("Not Allowed");
 
-            // Check if succeded
-            if (!signResult.Succeeded)
-                return BadRequest();
+                // Get user
+                var user = await _userManager.FindByEmailAsync(credentials.Email);
 
-            // Get user
-            var user = await _userManager.FindByEmailAsync(credentials.Email);
-
-            // return Token with Jwt for user
-            return Ok(CreateToken(user));
+                // return Token with Jwt for user
+                return Ok(CreateToken(user));
+            }
+            catch ( Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // Create token for given user
