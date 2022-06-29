@@ -44,15 +44,22 @@ namespace QuizBackend.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(Credentials credentials)
         {
-            // Create new User at Microft Identity
-            var user = new IdentityUser { UserName = credentials.Email, Email=credentials.Email };
-            var result = await _userManager.CreateAsync(user, credentials.Password);
+            try
+            {
+                // Create new User at Microft Identity
+                var user = new IdentityUser { UserName = credentials.Email, Email = credentials.Email };
+                var result = await _userManager.CreateAsync(user, credentials.Password);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+                if (!result.Succeeded)
+                    return BadRequest(result.Errors);
 
-            // return Token with Jwt for user
-            return Ok(CreateToken(user));
+                // return Token with Jwt for user
+                return Ok(CreateToken(user));
+            }
+            catch ( Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("login")]
