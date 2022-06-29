@@ -34,14 +34,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkSto
 
 // Cors Policy
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-//builder.Services.AddCors(options => options.AddPolicy(MyAllowSpecificOrigins, builder =>
-//{
-//    builder.AllowAnyHeader();
-//    builder.AllowAnyMethod();
-//    builder.AllowAnyOrigin();
-//}));
-
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
