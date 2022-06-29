@@ -33,11 +33,27 @@ builder.Services.AddDbContext<UserDbContext>(opt => opt.UseSqlServer(userConnStr
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<UserDbContext>();
 
 // Cors Policy
-builder.Services.AddCors(options => options.AddPolicy("Cors", builder => { 
-    builder.AllowAnyHeader();
-    builder.AllowAnyMethod();
-    builder.AllowAnyOrigin();
-}));
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+//builder.Services.AddCors(options => options.AddPolicy(MyAllowSpecificOrigins, builder =>
+//{
+//    builder.AllowAnyHeader();
+//    builder.AllowAnyMethod();
+//    builder.AllowAnyOrigin();
+//}));
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                          policy =>
+                          {
+                              policy.WithOrigins("http://localhost:4200",
+                                                 "https://localhost:4200",
+                                                 "https://gray-pebble-059106410.1.azurestaticapps.net")
+                                                 .AllowAnyHeader()
+                                                 .AllowAnyMethod();
+                          });
+});
 
 // Authentication with Jwts
 var secret = builder.Configuration.GetValue<string>($"JwtSecret");
@@ -71,7 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("Cors");
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
 
