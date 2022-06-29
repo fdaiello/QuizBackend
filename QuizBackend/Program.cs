@@ -32,7 +32,7 @@ builder.Services.AddDbContext<UserDbContext>(opt => opt.UseSqlServer(userConnStr
 // Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<UserDbContext>();
 
-// Cors Policy
+// Cors Policy ...
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
